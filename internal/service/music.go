@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/dmytroddemianchuk/crud-music/internal/domain"
+	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 )
 
 type MusicRepository interface {
