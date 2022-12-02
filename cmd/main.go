@@ -29,13 +29,13 @@ func main() {
 
 	musicRepository := repository.NewMovie(db)
 	musicService := service.NewMovie(musicRepository)
-	movieTransport := rest.NewMovie(musicService)
+	musicTransport := rest.NewMovie(musicService)
 
-	srv.GET("/movies", movieTransport.List)
-	srv.GET("/movie/:id", movieTransport.Get)
-	srv.POST("/movie", movieTransport.Create)
-	srv.PUT("/movie/:id", movieTransport.Update)
-	srv.DELETE("/movie/:id", movieTransport.Delete)
+	srv.GET("/musics", musicTransport.List)
+	srv.GET("/music/:id", musicTransport.Get)
+	srv.POST("/music", musicTransport.Create)
+	srv.PUT("/music/:id", musicTransport.Update)
+	srv.DELETE("/music/:id", musicTransport.Delete)
 
 	if err := srv.Run(fmt.Sprintf(":%s", cfg.Port)); err != nil {
 		logrus.Fatalf("error occured while running http server %s", err.Error())
