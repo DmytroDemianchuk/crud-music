@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/lukinairina90/crud_movies/internal/domain"
-	"github.com/lukinairina90/crud_movies/internal/repository/models"
+	"github.com/dmytrodemianchuk/crud-music/internal/domain"
+	"github.com/dmytrodemianchuk/crud-music/internal/repository/models"
 
 	"github.com/jmoiron/sqlx"
 )
