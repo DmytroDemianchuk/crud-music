@@ -12,12 +12,12 @@ movies-app-logs:
 
 migrates-up:
 	migrate \
-		-source file://docker/migrates \
-		-database postgres://postgres:goLANGninja@localhost:5432/musics?sslmode=disable \
+		-source file://docker/migrations \
+		-database postgres://postgres:goLANGn1nja@localhost:5432/musics?sslmode=disable \
 		up
 
 migrates-down:
 	migrate \
-		-source file://docker/migrates \
-		-database postgres://postgres:goLANGninja@localhost:5432/musics?sslmode=disable \
+		-source file://docker/migrations \
+		-database postgres://postgres:goLANGn1nja@localhost:5432/musics?sslmode=disable \
 		down

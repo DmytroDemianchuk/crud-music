@@ -27,9 +27,9 @@ func main() {
 		logrus.Fatalf("failed to connection db: %s", err.Error())
 	}
 
-	musicRepository := repository.NewMovie(db)
-	musicService := service.NewMovie(musicRepository)
-	musicTransport := rest.NewMovie(musicService)
+	musicRepository := repository.NewMusic(db)
+	musicService := service.NewMusic(musicRepository)
+	musicTransport := rest.NewMusic(musicService)
 
 	srv.GET("/musics", musicTransport.List)
 	srv.GET("/music/:id", musicTransport.Get)

@@ -48,7 +48,7 @@ func (m Music) Create(ctx context.Context, music domain.Music) (domain.Music, er
 		Genre:       music.Genre,
 	}
 
-	if err := m.db.QueryRowxContext(ctx, "INSERT INTO music (name, performer, realise_year, genre) VALUES ($1, $2, $3, $4) RETURNING *", mMusic.Name, mMusic.Performer, mMusic.ProductionYear, mMusic.Genre.Poster).StructScan(&mMusic); err != nil {
+	if err := m.db.QueryRowxContext(ctx, "INSERT INTO music (name, performer, realise_year, genre) VALUES ($1, $2, $3, $4) RETURNING *", mMusic.Name, mMusic.Performer, mMusic.RealiseYear, mMusic.Genre).StructScan(&mMusic); err != nil {
 		return domain.Music{}, err
 	}
 

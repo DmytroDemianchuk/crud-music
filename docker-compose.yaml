@@ -14,7 +14,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: goLANGninja
+      POSTGRES_PASSWORD: goLANGn1nja
 
   migrations:
     container_name: music-app-migrations
@@ -23,7 +23,7 @@ services:
       - ./docker/migrations:/migrations
     command:
       - -path=/migrations/
-      - -database=postgres://postgres:goLANGninja@db:5432/musics?sslmode=disable
+      - -database=postgres://postgres:goLANGn1nja@db:5432/musics?sslmode=disable
       - up
     restart: on-failure
     depends_on:
@@ -41,7 +41,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASS: goLANGninja
+      DB_PASS: goLANGn1nja
       DB_NAME: musics
       SSL_MODE: false
     restart: on-failure

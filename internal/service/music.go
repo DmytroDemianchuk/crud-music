@@ -18,7 +18,7 @@ type Music struct {
 	musicRepository MusicRepository
 }
 
-func NewMovie(musicRepository MusicRepository) *Music {
+func NewMusic(musicRepository MusicRepository) *Music {
 	return &Music{musicRepository: musicRepository}
 }
 
@@ -34,7 +34,7 @@ func (m Music) Create(ctx context.Context, music domain.Music) (domain.Music, er
 	return m.musicRepository.Create(ctx, music)
 }
 
-func (m Music) Update(ctx context.Context, id int, music domain.Music) (domain.Movie, error) {
+func (m Music) Update(ctx context.Context, id int, music domain.Music) (domain.Music, error) {
 	return m.musicRepository.Update(ctx, id, music)
 }
 
