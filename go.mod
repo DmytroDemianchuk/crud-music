@@ -3,6 +3,7 @@ module github.com/dmytrodemianchuk/crud-music
 go 1.19
 
 require (
+	github.com/caarlos0/env v3.5.0+incompatible // indirect
 	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect

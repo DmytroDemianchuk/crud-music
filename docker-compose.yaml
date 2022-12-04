@@ -1,50 +1,26 @@
+version: '3.8'
+
 services:
-  db:
-    container_name: musics-db
+  crud-musics:
+    build: ./
+    command:  ./crud-musics
+    ports:
+      - 8080:8080
+    restart: on-failure
+    depends_on:
+      - musics-db
+    environment:
+      - "DB_HOST=musics-db"
+      - "DB_PORT=5432"
+      - "DB_USERNAME=postgres"
+      - "DB_PASSWORD=goLANGninja"
+      - "DB_NAME=postgres"
+      - "SSL_MODE=disable"
+
+  musics-db:
+    restart: always
     image: postgres
-    volumes:
-      - type: bind
-        source: docker/data
-        target: /var/lib/postgresql/data
-        read_only: false
-      - type: bind
-        source: docker/postgres/init-db.sql
-        target: /docker-entrypoint-initdb.d/init-db.sql
-        read_only: true
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: goLANGn1nja
-
-  migrations:
-    container_name: music-app-migrations
-    image: migrate/migrate
-    volumes:
-      - ./docker/migrations:/migrations
-    command:
-      - -path=/migrations/
-      - -database=postgres://postgres:goLANGn1nja@db:5432/musics?sslmode=disable
-      - up
-    restart: on-failure
-    depends_on:
-      - db
-
-  movies-app:
-    container_name: musics-app
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    ports:
-      - 8080:8080
-    environment:
-      PORT: 8080
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASS: goLANGn1nja
-      DB_NAME: musics
-      SSL_MODE: false
-    restart: on-failure
-    depends_on:
-      - db
-      - migrations
+      - "POSTGRES_PASSWORD=goLANGninja"
