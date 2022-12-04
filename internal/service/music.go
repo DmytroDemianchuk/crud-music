@@ -9,8 +9,8 @@ import (
 type MusicRepository interface {
 	List(ctx context.Context) (domain.ListMusic, error)
 	Get(ctx context.Context, id int) (domain.Music, error)
-	Create(ctx context.Context, movie domain.Music) (domain.Music, error)
-	Update(ctx context.Context, id int, movie domain.Music) (domain.Music, error)
+	Create(ctx context.Context, music domain.Music) (domain.Music, error)
+	Update(ctx context.Context, id int, music domain.Music) (domain.Music, error)
 	Delete(ctx context.Context, id int) error
 }
 

@@ -1,14 +1,23 @@
-build:
-	docker-compose build crud-musics
-
 run:
-	docker-compose up crud-musics
+	docker-compose up -d --build
 
-# migrate:
-# 	migrate \
-# 		-source file://docker/migrations \
-# 		-database postgres://postgres:qwerty@localhost:5432/musics?sslmode=disable \
-# 		up
+stop:
+	docker-compose down
 
-migrate:
-	migrate -path ./docker/migrations -database postgres://postgres:goLANGninja@localhost:5432/postgres?sslmode=disable up
+db-logs:
+	docker-compose logs -f db
+
+musics-app-logs:
+	docker-compose logs -f musics-app
+
+migrates-up:
+	migrate \
+		-source file://docker/migratios \
+		-database postgres://postgres:goLANGninja@localhost:5432/musics?sslmode=disable \
+		up
+
+migrates-down:
+	migrate \
+		-source file://docker/migratios \
+		-database postgres://postgres:goLANGninja@localhost:5432/musics?sslmode=disable \
+		down
