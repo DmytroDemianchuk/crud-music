@@ -1,10 +1,11 @@
-# REST API FOR Crud-music
+# REST API FOR crud-music
 
 Use command: `git clone https://github.com/dmytrodemianchuk/crud-music`
 
 ## Build and Run
 Use this command in the directory
-- `make run`
+- `make run` - to run an application
+- `make stop` - to stop an application
 
 ## CRUD operations:
 POST - "/music" - create music

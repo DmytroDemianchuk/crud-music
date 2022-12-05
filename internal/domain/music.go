@@ -6,6 +6,6 @@ type Music struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	Performer   string `json:"performer"`
-	RealiseYear int    `db:"realise_year"`
+	RealiseYear int    `json:"realise_year"`
 	Genre       string `json:"genre"`
 }
