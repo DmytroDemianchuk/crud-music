@@ -2,7 +2,7 @@
 
 Use command: `git clone https://github.com/dmytrodemianchuk/crud-music`
 
-## Build and Run
+## Commands of application
 Use this command in the directory
 - `make run` - to run an application
 - `make stop` - to stop an application

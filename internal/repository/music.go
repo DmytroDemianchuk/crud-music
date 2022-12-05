@@ -63,7 +63,7 @@ func (m Music) Update(ctx context.Context, id int, music domain.Music) (domain.M
 		Genre:       music.Genre,
 	}
 
-	if err := m.db.QueryRowxContext(ctx, "UPDATE music SET name=$1, perfomer=$2, realise_year=$3, genre=$4 WHERE id=$7 RETURNING *", mMusic.Name, mMusic.Performer, mMusic.RealiseYear, mMusic.Genre, id).StructScan(&mMusic); err != nil {
+	if err := m.db.QueryRowxContext(ctx, "UPDATE music SET name=$1, perfomer=$2, realise_year=$3, genre=$4 WHERE id=$5 RETURNING *", mMusic.Name, mMusic.Performer, mMusic.RealiseYear, mMusic.Genre, id).StructScan(&mMusic); err != nil {
 		return domain.Music{}, err
 	}
 
