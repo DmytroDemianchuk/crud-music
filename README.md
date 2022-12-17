@@ -21,7 +21,8 @@ DELETE "/music/:id" - delete music by id
 ## Example of creating an music:
 In Postman you choose "Body" menu, POST `localhost:8080/music` and type for example:
 
-{  
+```
+{
 "name": "Spiral",  
 "performer": "21 Savage",  
 "realise_year": 2021,  
