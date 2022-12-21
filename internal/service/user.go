@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/GOLANG-NINJA/crud-app/internal/domain"
-	audit "github.com/GOLANG-NINJA/crud-audit-log/pkg/domain"
+	audit "github.com/dmytrodemianchuk/audit-log/pkg/domain"
+	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 	"github.com/golang-jwt/jwt"
 	"github.com/sirupsen/logrus"
 )

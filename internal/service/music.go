@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
-
 	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 )
 
@@ -19,18 +17,18 @@ type Musics struct {
 	repo MusicsRepository
 }
 
-func NewBooks(repo MusicsRepository) *Musics {
+func NewMusics(repo MusicsRepository) *Musics {
 	return &Musics{
 		repo: repo,
 	}
 }
 
-func (s *Musics) Create(ctx context.Context, book domain.Music) error {
-	if book.PublishDate.IsZero() {
-		book.PublishDate = time.Now()
-	}
+func (s *Musics) Create(ctx context.Context, music domain.Music) error {
+	//if music.PublishDate.IsZero() {
+	//	music.PublishDate = time.Now()
+	//}
 
-	return s.repo.Create(ctx, book)
+	return s.repo.Create(ctx, music)
 }
 
 func (s *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {

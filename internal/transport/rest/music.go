@@ -13,14 +13,14 @@ import (
 func (h *Handler) getMusicByID(w http.ResponseWriter, r *http.Request) {
 	id, err := getIdFromRequest(r)
 	if err != nil {
-		logError("getBookByID", err)
+		logError("getMusicByID", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	book, err := h.musicsService.GetByID(context.TODO(), id)
+	music, err := h.musicsService.GetByID(context.TODO(), id)
 	if err != nil {
-		if errors.Is(err, domain.ErrBookNotFound) {
+		if errors.Is(err, domain.ErrMusicNotFound) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -30,7 +30,7 @@ func (h *Handler) getMusicByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(book)
+	response, err := json.Marshal(music)
 	if err != nil {
 		logError("getMusicByID", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -85,7 +85,7 @@ func (h *Handler) deleteMusic(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getAllMusics(w http.ResponseWriter, r *http.Request) {
-	books, err := h.musicsService.GetAll(r.Context())
+	musics, err := h.musicsService.GetAll(r.Context())
 	if err != nil {
 		logError("getAllBooks", err)
 		w.WriteHeader(http.StatusInternalServerError)

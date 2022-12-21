@@ -27,14 +27,14 @@ type User interface {
 }
 
 type Handler struct {
-	booksService Musics
-	usersService User
+	musicsService Musics
+	usersService  User
 }
 
 func NewHandler(books Musics, users User) *Handler {
 	return &Handler{
-		booksService: books,
-		usersService: users,
+		musicsService: books,
+		usersService:  users,
 	}
 }
 
@@ -49,15 +49,15 @@ func (h *Handler) InitRouter() *mux.Router {
 		auth.HandleFunc("/refresh", h.refresh).Methods(http.MethodGet)
 	}
 
-	books := r.PathPrefix("/books").Subrouter()
+	musics := r.PathPrefix("/books").Subrouter()
 	{
-		books.Use(h.authMiddleware)
+		musics.Use(h.authMiddleware)
 
-		books.HandleFunc("", h.createBook).Methods(http.MethodPost)
-		books.HandleFunc("", h.getAllBooks).Methods(http.MethodGet)
-		books.HandleFunc("/{id:[0-9]+}", h.getBookByID).Methods(http.MethodGet)
-		books.HandleFunc("/{id:[0-9]+}", h.deleteBook).Methods(http.MethodDelete)
-		books.HandleFunc("/{id:[0-9]+}", h.updateBook).Methods(http.MethodPut)
+		musics.HandleFunc("", h.createMusic).Methods(http.MethodPost)
+		musics.HandleFunc("", h.getAllMusics).Methods(http.MethodGet)
+		musics.HandleFunc("/{id:[0-9]+}", h.getMusicByID).Methods(http.MethodGet)
+		musics.HandleFunc("/{id:[0-9]+}", h.deleteMusic).Methods(http.MethodDelete)
+		musics.HandleFunc("/{id:[0-9]+}", h.updateMusic).Methods(http.MethodPut)
 	}
 
 	return r

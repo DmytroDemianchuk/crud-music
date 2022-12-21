@@ -52,8 +52,8 @@ func main() {
 	// init deps
 	hasher := hash.NewSHA1Hasher("salt")
 
-	booksRepo := psql.NewMUsics(db)
-	booksService := service.NewMusics(booksRepo)
+	musicsRepo := psql.NewMusics(db)
+	musicsService := service.NewMusics(musicsRepo)
 
 	usersRepo := psql.NewUsers(db)
 	tokensRepo := psql.NewTokens(db)
@@ -65,7 +65,7 @@ func main() {
 
 	usersService := service.NewUsers(usersRepo, tokensRepo, auditClient, hasher, []byte("sample secret"))
 
-	handler := rest.NewHandler(booksService, usersService)
+	handler := rest.NewHandler(musicsService, usersService)
 
 	// init & run server
 	srv := &http.Server{

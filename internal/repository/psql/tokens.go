@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/GOLANG-NINJA/crud-app/internal/domain"
+	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 )
 
 type Tokens struct {
