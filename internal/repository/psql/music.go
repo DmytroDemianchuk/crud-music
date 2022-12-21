@@ -2,77 +2,98 @@ package psql
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/dmytrodemianchuk/crud-music/internal/domain"
-	"github.com/dmytrodemianchuk/crud-music/internal/repository/models"
-
-	"github.com/jmoiron/sqlx"
 )
 
-type Music struct {
-	db *sqlx.DB
+type Musics struct {
+	db *sql.DB
 }
 
-func NewMusic(db *sqlx.DB) *Music {
-	return &Music{db: db}
+func NewMusics(db *sql.DB) *Musics {
+	return &Musics{db}
 }
 
-func (m Music) List(ctx context.Context) (domain.ListMusic, error) {
-	var list []models.Music
-	if err := m.db.SelectContext(ctx, &list, "SELECT * FROM music"); err != nil {
+func (r *Musics) Create(ctx context.Context, music domain.Music) error {
+	_, err := r.db.Exec("INSERT INTO musics (name, performer, realise_year, genre) values ($1, $2, $3, $4)",
+		music.Name, music.Performer, music.RealiseYear, music.Genre)
+
+	return err
+}
+
+func (r *Musics) GetByID(ctx context.Context, id int64) (domain.Book, error) {
+	var music domain.Music
+	err := r.db.QueryRow("SELECT id, name, performer, realise_year, genre FROM musics WHERE id=$1", id).
+		Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseYear, &music.Genre)
+	if err == sql.ErrNoRows {
+		return music, domain.ErrMusicNotFound
+	}
+
+	return music, err
+}
+
+func (r *Musics) GetAll(ctx context.Context) ([]domain.Book, error) {
+	rows, err := r.db.Query("SELECT id, name, performer, realise_year, genre FROM musics")
+	if err != nil {
 		return nil, err
 	}
 
-	dlist := make(domain.ListMusic, 0, len(list))
-	for _, music := range list {
-		dlist = append(dlist, music.ToDomain())
+	musics := make([]domain.Music, 0)
+	for rows.Next() {
+		var music domain.Music
+		if err := rows.Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseYear, &music.Genre); err != nil {
+			return nil, err
+		}
+
+		musics = append(musics, music)
 	}
 
-	return dlist, nil
+	return musics, rows.Err()
 }
 
-func (m Music) Get(ctx context.Context, id int) (domain.Music, error) {
-	var music models.Music
-	if err := m.db.GetContext(ctx, &music, "SELECT * FROM  music WHERE id=$1", id); err != nil {
-		return domain.Music{}, err
-	}
+func (r *musics) Delete(ctx context.Context, id int64) error {
+	_, err := r.db.Exec("DELETE FROM musics WHERE id=$1", id)
 
-	return music.ToDomain(), nil
+	return err
 }
 
-func (m Music) Create(ctx context.Context, music domain.Music) (domain.Music, error) {
-	mMusic := models.Music{
-		Name:        music.Name,
-		Performer:   music.Performer,
-		RealiseYear: music.RealiseYear,
-		Genre:       music.Genre,
+func (r *Musics) Update(ctx context.Context, id int64, inp domain.UpdateBookInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if inp.Name != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		args = append(args, *inp.Name)
+		argId++
 	}
 
-	if err := m.db.QueryRowxContext(ctx, "INSERT INTO music (name, performer, realise_year, genre) VALUES ($1, $2, $3, $4) RETURNING *", mMusic.Name, mMusic.Performer, mMusic.RealiseYear, mMusic.Genre).StructScan(&mMusic); err != nil {
-		return domain.Music{}, err
+	if inp.Performer != nil {
+		setValues = append(setValues, fmt.Sprintf("author=$%d", argId))
+		args = append(args, *inp.performer)
+		argId++
 	}
 
-	return mMusic.ToDomain(), nil
-}
-
-func (m Music) Update(ctx context.Context, id int, music domain.Music) (domain.Music, error) {
-	mMusic := models.Music{
-		Name:        music.Name,
-		Performer:   music.Performer,
-		RealiseYear: music.RealiseYear,
-		Genre:       music.Genre,
+	if inp.Realise_year != nil {
+		setValues = append(setValues, fmt.Sprintf("publish_date=$%d", argId))
+		args = append(args, *inp.RealiseYear)
+		argId++
 	}
 
-	if err := m.db.QueryRowxContext(ctx, "UPDATE music SET name=$1, perfomer=$2, realise_year=$3, genre=$4 WHERE id=$5 RETURNING *", mMusic.Name, mMusic.Performer, mMusic.RealiseYear, mMusic.Genre, id).StructScan(&mMusic); err != nil {
-		return domain.Music{}, err
+	if inp.Genre != nil {
+		setValues = append(setValues, fmt.Sprintf("rating=$%d", argId))
+		args = append(args, *inp.Genre)
+		argId++
 	}
 
-	return mMusic.ToDomain(), nil
-}
+	setQuery := strings.Join(setValues, ", ")
 
-func (m Music) Delete(ctx context.Context, id int) error {
-	if _, err := m.db.ExecContext(ctx, "DELETE FROM music WHERE id=$1", id); err != nil {
-		return err
-	}
-	return nil
+	query := fmt.Sprintf("UPDATE muiscs SET %s WHERE id=%d", setQuery, argId+1)
+	args = append(args, id)
+
+	_, err := r.db.Exec(query, args...)
+	return err
 }

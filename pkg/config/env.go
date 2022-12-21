@@ -1,22 +1,6 @@
-package config
-
-import "github.com/caarlos0/env"
-
-type Config struct {
-	Port    string `env:"PORT"`
-	DBHost  string `env:"DB_HOST"`
-	DBPort  string `env:"DB_PORT"`
-	DBUser  string `env:"DB_USER"`
-	DBPass  string `env:"DB_PASS"`
-	DBName  string `env:"DB_NAME"`
-	SSLMode bool   `env:"DB_SSL_MODE"`
-}
-
-func Parse() (Config, error) {
-	var cfg Config
-	if err := env.Parse(&cfg); err != nil {
-		return Config{}, err
-	}
-
-	return cfg, nil
-}
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_USERNAME=postgres
+export DB_NAME=postgres
+export DB_SSLMODE=disable
+export DB_PASSWORD=qwerty123

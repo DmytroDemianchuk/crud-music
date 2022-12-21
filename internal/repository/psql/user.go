@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dmytrodeminchuk/crud-music/internal/domain"
+	"github.com/GOLANG-NINJA/crud-app/internal/domain"
 )
 
 type Users struct {
