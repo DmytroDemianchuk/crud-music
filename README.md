@@ -1,11 +1,20 @@
-# REST API FOR crud-music
+# REST API Crud-music
 
 Use command: `git clone https://github.com/dmytrodemianchuk/crud-music`
 
-## Commands of application
-Use this command in the directory
-- `make run` - to run an application
-- `make stop` - to stop an application
+### Build and Start
+
+
+```
+source .env && go build -o app cmd/main.go && ./app
+```
+
+For postgres use Docker
+
+```
+docker run -d --name ninja-db -e POSTGRES_PASSWORD=qwerty123 -v ${HOME}/pgdata/:/var/lib/postgresql/data -p 5432:5432 postgres
+```
+
 
 ## CRUD operations:
 POST - "/music" - create music
