@@ -17,17 +17,17 @@ func NewMusics(db *sql.DB) *Musics {
 	return &Musics{db}
 }
 
-func (m *Musics) Create(ctx context.Context, music domain.Music) error {
-	_, err := m.db.Exec("INSERT INTO musics (name, performer, realise_year, genre) values ($1, $2, $3, $4)",
-		music.Name, music.Performer, music.RealiseYear, music.Genre)
+func (r *Musics) Create(ctx context.Context, music domain.Music) error {
+	_, err := r.db.Exec("INSERT INTO musics (name, artist, publish_date, genre) values ($1, $2, $3, $4)",
+		music.Name, music.Artist, music.PublishDate, music.Genre)
 
 	return err
 }
 
-func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
+func (r *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
 	var music domain.Music
-	err := m.db.QueryRow("SELECT id, name, performer, realise_year, genre FROM musics WHERE id=$1", id).
-		Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseYear, &music.Genre)
+	err := r.db.QueryRow("SELECT id, name, artist, publish_date, genre FROM musics WHERE id=$1", id).
+		Scan(&music.ID, &music.Name, &music.Artist, &music.PublishDate, &music.Genre)
 	if err == sql.ErrNoRows {
 		return music, domain.ErrMusicNotFound
 	}
@@ -35,8 +35,8 @@ func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
 	return music, err
 }
 
-func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
-	rows, err := m.db.Query("SELECT id, name, performer, realise_year, genre FROM musics")
+func (r *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
+	rows, err := r.db.Query("SELECT id, name, artist, publish_date, genre FROM musics")
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
 	musics := make([]domain.Music, 0)
 	for rows.Next() {
 		var music domain.Music
-		if err := rows.Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseYear, &music.Genre); err != nil {
+		if err := rows.Scan(&music.ID, &music.Name, &music.Artist, &music.PublishDate, &music.Genre); err != nil {
 			return nil, err
 		}
 
@@ -54,37 +54,37 @@ func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
 	return musics, rows.Err()
 }
 
-func (m *Musics) Delete(ctx context.Context, id int64) error {
-	_, err := m.db.Exec("DELETE FROM musics WHERE id=$1", id)
+func (r *Musics) Delete(ctx context.Context, id int64) error {
+	_, err := r.db.Exec("DELETE FROM musics WHERE id=$1", id)
 
 	return err
 }
 
-func (m *Musics) Update(ctx context.Context, id int64, inp domain.UpdateMusicInput) error {
+func (r *Musics) Update(ctx context.Context, id int64, inp domain.UpdateMusicInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
 
 	if inp.Name != nil {
-		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
 		args = append(args, *inp.Name)
 		argId++
 	}
 
-	if inp.Performer != nil {
-		setValues = append(setValues, fmt.Sprintf("performer=$%d", argId))
-		args = append(args, *inp.Performer)
+	if inp.Artist != nil {
+		setValues = append(setValues, fmt.Sprintf("author=$%d", argId))
+		args = append(args, *inp.Artist)
 		argId++
 	}
 
-	if inp.RealiseYear != nil {
-		setValues = append(setValues, fmt.Sprintf("realise_year=$%d", argId))
-		args = append(args, *inp.RealiseYear)
+	if inp.PublishDate != nil {
+		setValues = append(setValues, fmt.Sprintf("publish_date=$%d", argId))
+		args = append(args, *inp.Artist)
 		argId++
 	}
 
 	if inp.Genre != nil {
-		setValues = append(setValues, fmt.Sprintf("genre=$%d", argId))
+		setValues = append(setValues, fmt.Sprintf("rating=$%d", argId))
 		args = append(args, *inp.Genre)
 		argId++
 	}
@@ -94,6 +94,6 @@ func (m *Musics) Update(ctx context.Context, id int64, inp domain.UpdateMusicInp
 	query := fmt.Sprintf("UPDATE musics SET %s WHERE id=%d", setQuery, argId+1)
 	args = append(args, id)
 
-	_, err := m.db.Exec(query, args...)
+	_, err := r.db.Exec(query, args...)
 	return err
 }

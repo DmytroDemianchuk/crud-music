@@ -13,12 +13,12 @@ import (
 func (h *Handler) getMusicByID(w http.ResponseWriter, r *http.Request) {
 	id, err := getIdFromRequest(r)
 	if err != nil {
-		logError("getMusicByID", err)
+		logError("getBookByID", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	music, err := h.musicsService.GetByID(context.TODO(), id)
+	book, err := h.musicsService.GetByID(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, domain.ErrMusicNotFound) {
 			w.WriteHeader(http.StatusBadRequest)
@@ -30,7 +30,7 @@ func (h *Handler) getMusicByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(music)
+	response, err := json.Marshal(book)
 	if err != nil {
 		logError("getMusicByID", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -51,7 +51,7 @@ func (h *Handler) createMusic(w http.ResponseWriter, r *http.Request) {
 
 	var music domain.Music
 	if err = json.Unmarshal(reqBytes, &music); err != nil {
-		logError("createBook", err)
+		logError("createMusic", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -85,14 +85,14 @@ func (h *Handler) deleteMusic(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getAllMusics(w http.ResponseWriter, r *http.Request) {
-	musics, err := h.musicsService.GetAll(r.Context())
+	books, err := h.musicsService.GetAll(r.Context())
 	if err != nil {
-		logError("getAllBooks", err)
+		logError("getAllMusics", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	response, err := json.Marshal(musics)
+	response, err := json.Marshal(books)
 	if err != nil {
 		logError("getAllMusics", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -113,14 +113,14 @@ func (h *Handler) updateMusic(w http.ResponseWriter, r *http.Request) {
 
 	reqBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logError("updateBook", err)
+		logError("updateMusic", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	var inp domain.UpdateMusicInput
 	if err = json.Unmarshal(reqBytes, &inp); err != nil {
-		logError("updateBook", err)
+		logError("updateMusic", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

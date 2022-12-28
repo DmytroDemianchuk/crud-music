@@ -12,7 +12,7 @@ import (
 )
 
 type Musics interface {
-	Create(ctx context.Context, book domain.Music) error
+	Create(ctx context.Context, music domain.Music) error
 	GetByID(ctx context.Context, id int64) (domain.Music, error)
 	GetAll(ctx context.Context) ([]domain.Music, error)
 	Delete(ctx context.Context, id int64) error
@@ -31,9 +31,9 @@ type Handler struct {
 	usersService  User
 }
 
-func NewHandler(books Musics, users User) *Handler {
+func NewHandler(musics Musics, users User) *Handler {
 	return &Handler{
-		musicsService: books,
+		musicsService: musics,
 		usersService:  users,
 	}
 }
@@ -49,7 +49,7 @@ func (h *Handler) InitRouter() *mux.Router {
 		auth.HandleFunc("/refresh", h.refresh).Methods(http.MethodGet)
 	}
 
-	musics := r.PathPrefix("/books").Subrouter()
+	musics := r.PathPrefix("/musics").Subrouter()
 	{
 		musics.Use(h.authMiddleware)
 

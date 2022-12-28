@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"time"
+
 	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 )
 
@@ -24,9 +26,9 @@ func NewMusics(repo MusicsRepository) *Musics {
 }
 
 func (s *Musics) Create(ctx context.Context, music domain.Music) error {
-	//if music.PublishDate.IsZero() {
-	//	music.PublishDate = time.Now()
-	//}
+	if music.PublishDate.IsZero() {
+		music.PublishDate = time.Now()
+	}
 
 	return s.repo.Create(ctx, music)
 }
