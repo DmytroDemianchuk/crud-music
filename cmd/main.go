@@ -2,42 +2,73 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/dmytrodemianchuk/crud-music/internal/repository"
+	"github.com/dmytrodemianchuk/crud-music/internal/config"
+	"github.com/dmytrodemianchuk/crud-music/internal/repository/psql"
 	"github.com/dmytrodemianchuk/crud-music/internal/service"
 	"github.com/dmytrodemianchuk/crud-music/internal/transport/rest"
-	"github.com/dmytrodemianchuk/crud-music/pkg/config"
 	"github.com/dmytrodemianchuk/crud-music/pkg/database"
+	"github.com/dmytrodemianchuk/crud-music/pkg/hash"
 
-	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+
+	log "github.com/sirupsen/logrus"
 )
 
+const (
+	CONFIG_DIR  = "configs"
+	CONFIG_FILE = "main"
+)
+
+func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+}
+
 func main() {
-	srv := gin.New()
-
-	cfg, err := config.Parse()
+	cfg, err := config.New(CONFIG_DIR, CONFIG_FILE)
 	if err != nil {
-		logrus.Fatalf("error psring config: %s", err.Error())
+		log.Fatal(err)
 	}
 
-	db, err := database.CreateConn(cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName, cfg.SSLMode)
+	// init db
+	db, err := database.NewPostgresConnection(database.ConnectionInfo{
+		Host:     cfg.DB.Host,
+		Port:     cfg.DB.Port,
+		Username: cfg.DB.Username,
+		DBName:   cfg.DB.Name,
+		SSLMode:  cfg.DB.SSLMode,
+		Password: cfg.DB.Password,
+	})
 	if err != nil {
-		logrus.Fatalf("failed to connection db: %s", err.Error())
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	// init deps
+	hasher := hash.NewSHA1Hasher("salt")
+
+	musicsRepo := psql.NewMusics(db)
+	musicsService := service.NewMusics(musicsRepo)
+
+	usersRepo := psql.NewUsers(db)
+	tokensRepo := psql.NewTokens(db)
+	usersService := service.NewUsers(usersRepo, tokensRepo, hasher, []byte("sample secret"))
+
+	handler := rest.NewHandler(musicsService, usersService)
+
+	// init & run server
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.Server.Port),
+		Handler: handler.InitRouter(),
 	}
 
-	musicRepository := repository.NewMusic(db)
-	musicService := service.NewMusic(musicRepository)
-	musicTransport := rest.NewMusic(musicService)
+	log.Info("SERVER STARTED")
 
-	srv.GET("/musics", musicTransport.List)
-	srv.GET("/music/:id", musicTransport.Get)
-	srv.POST("/music", musicTransport.Create)
-	srv.PUT("/music/:id", musicTransport.Update)
-	srv.DELETE("/music/:id", musicTransport.Delete)
-
-	if err := srv.Run(fmt.Sprintf(":%s", cfg.Port)); err != nil {
-		logrus.Fatalf("error occured while running http server %s", err.Error())
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
 	}
 }
