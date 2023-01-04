@@ -2,42 +2,49 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/dmytrodemianchuk/crud-music/internal/domain"
 )
 
-type MusicRepository interface {
-	List(ctx context.Context) (domain.ListMusic, error)
-	Get(ctx context.Context, id int) (domain.Music, error)
-	Create(ctx context.Context, music domain.Music) (domain.Music, error)
-	Update(ctx context.Context, id int, music domain.Music) (domain.Music, error)
-	Delete(ctx context.Context, id int) error
+type MusicsRepository interface {
+	Create(ctx context.Context, book domain.Music) error
+	GetByID(ctx context.Context, id int64) (domain.Music, error)
+	GetAll(ctx context.Context) ([]domain.Music, error)
+	Delete(ctx context.Context, id int64) error
+	Update(ctx context.Context, id int64, inp domain.UpdateMusicInput) error
 }
 
-type Music struct {
-	musicRepository MusicRepository
+type Musics struct {
+	repo MusicsRepository
 }
 
-func NewMusic(musicRepository MusicRepository) *Music {
-	return &Music{musicRepository: musicRepository}
+func NewMusics(repo MusicsRepository) *Musics {
+	return &Musics{
+		repo: repo,
+	}
 }
 
-func (m Music) List(ctx context.Context) (domain.ListMusic, error) {
-	return m.musicRepository.List(ctx)
+func (s *Musics) Create(ctx context.Context, music domain.Music) error {
+	if music.PublishDate.IsZero() {
+		music.PublishDate = time.Now()
+	}
+
+	return s.repo.Create(ctx, music)
 }
 
-func (m Music) Get(ctx context.Context, id int) (domain.Music, error) {
-	return m.musicRepository.Get(ctx, id)
+func (s *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
+	return s.repo.GetByID(ctx, id)
 }
 
-func (m Music) Create(ctx context.Context, music domain.Music) (domain.Music, error) {
-	return m.musicRepository.Create(ctx, music)
+func (s *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
+	return s.repo.GetAll(ctx)
 }
 
-func (m Music) Update(ctx context.Context, id int, music domain.Music) (domain.Music, error) {
-	return m.musicRepository.Update(ctx, id, music)
+func (s *Musics) Delete(ctx context.Context, id int64) error {
+	return s.repo.Delete(ctx, id)
 }
 
-func (m Music) Delete(ctx context.Context, id int) error {
-	return m.musicRepository.Delete(ctx, id)
+func (s *Musics) Update(ctx context.Context, id int64, inp domain.UpdateMusicInput) error {
+	return s.repo.Update(ctx, id, inp)
 }
